@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1">
+		<!-- Google Chrome Frame也可以让IE用上Chrome的引擎: -->
+		<meta name="renderer" content="webkit">
+		<!--国产浏览器高速模式-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="小课后台" />
+		<!-- 作者 -->
+		<meta name="revised" content="小课后台.v3, 2019/05/01" />
+		<!-- 定义页面的最新版本 -->
+		<meta name="description" content="网站简介" />
+		<!-- 网站简介 -->
+		<meta name="keywords" content="搜索关键字，以半角英文逗号隔开" />
+		<title>小课后台出品</title>
+		<!-- 公共样式 开始 -->
+		<link rel="stylesheet" type="text/css" href="../../static/css/base.css">
+		<link rel="stylesheet" type="text/css" href="../../static/fonts/iconfont.css">
+		<script type="text/javascript" src="../../static/framework/jquery-1.11.3.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../../static/layui/css/layui.css">
+		<script type="text/javascript" src="../../static/layui/layui.js"></script>
+		<script src="../../static/framework/cframe.js"></script><!-- 仅供所有子页面使用 -->
+		<!-- 公共样式 结束 -->
+
+		<style>
+			.layui-table img {
+			    max-width: none;
+			}
+		</style>
+
+	</head>
+
+	<body>
+        <form class="layui-form" id="test" style="display:none" action="/createQun/create" method="post">
+            <div class="layui-input-inline" style="display:none">
+                            <label class="layui-form-label"><nobr>token</nobr></label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="token" lay-verify="required" autocomplete="off" class="layui-input" value="{{ token }}">
+                            </div>
+						</div>
+            <div class="layui-input-inline" style="display:none">
+                            <label class="layui-form-label"><nobr>kuick用户id</nobr></label>
+                            <div class="layui-input-inline">
+                                // 这里的第一个参数写死
+                                <input type="text" name="kuick_id" lay-verify="required" autocomplete="off" class="layui-input" value="50041">
+                            </div>
+						</div>
+            <div class="layui-input-inline" style="display:none">
+                            // 分群图片写死
+                            <label class="layui-form-label"><nobr>分群图片</nobr></label>
+                            <div class="layui-inline">
+                                <input name="qun_img" lay-filter="zhuanxiao" id="qun_img" class="layui-input" value="https://img-prod.kuick.cn/user/header/guest.png">
+                            </div>
+                        </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><nobr>期数</nobr></label>
+                <div class="layui-input-inline shortInput">
+                    <input type="text" name="qishu" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+                <i class="iconfont icon-huaban bt"></i>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><nobr>群号</nobr></label>
+                <div class="layui-input-inline shortInput">
+                    <input type="text" name="qunhao" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+                <i class="iconfont icon-huaban bt"></i>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><nobr>社群</nobr></label>
+                <div class="layui-input-inline shortInput">
+                    <input type="text" name="shequn" lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+                <i class="iconfont icon-huaban bt"></i>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label"><nobr>开课日期</nobr></label>
+                <div class="layui-input-inline shortInput">
+                    <input type="text" class="layui-input" id="test5" name="start_class_time">
+                </div>
+                <i class="iconfont icon-huaban bt"></i>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <input class="layui-btn" type="submit" value="确定">
+                </div>
+            </div>
+
+
+    </form>
+
+		<div class="cBody">
+			<div class="console">
+                <form>
+{#                    这里添加筛选部分     #}
+{#                    <div class="layui-input-inline">#}
+{#                        <label class="layui-form-label"><nobr>微信昵称</nobr></label>#}
+{#                        <div class="layui-input-inline">#}
+{#                        <input name="weixin_name" lay-filter="weixin_name" id="weixin_name" class="layui-input" value="">#}
+{#                    </div>#}
+{#                    </div>#}
+{##}
+{#                    <div class="layui-input-inline">#}
+{#                        <label class="layui-form-label"><nobr>日期</nobr></label>#}
+{#                        <div class="layui-inline">#}
+{#                          <input type="text" name="start_time" id="start_time" class="layui-input test-item" value="">#}
+{#                        </div>#}
+{#                        <p class="layui-inline">--</p>#}
+{#                        <div class="layui-inline">#}
+{#                          <input type="text" name="finish_time" id="finish_time" class="layui-input test-item" value="">#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <input class="layui-btn" type="submit" value="查询">#}
+
+                <div class="layui-input-inline">
+                    <a onclick="beizhu()" class="layui-btn">建群</a>
+                </div>
+                </form>
+
+			</div>
+
+			<table class="layui-table">
+				<thead>
+					<tr>
+						<th><nobr>序号</nobr></th>
+{#						<th><nobr>id</nobr></th>#}
+{#						<th><nobr>appId</nobr></th>#}
+{#						<th><nobr>kuickUserId</nobr></th>#}
+{#						<th><nobr>name</nobr></th>#}
+{#						<th><nobr>头像</nobr></th>#}
+{#						<th><nobr>comment</nobr></th>#}
+{#						<th><nobr>status</nobr></th>#}
+{#						<th><nobr>createdAt</nobr></th>#}
+{#						<th><nobr>updatedAt</nobr></th>#}
+{#						<th><nobr>type</nobr></th>#}
+{#						<th><nobr>shareType</nobr></th>#}
+{#						<th><nobr>userName</nobr></th>#}
+{#						<th><nobr>customerCount</nobr></th>#}
+                        <th><nobr>账户id</nobr></th>
+						<th><nobr>群名</nobr></th>
+						<th><nobr>头像</nobr></th>
+						<th><nobr>分群备注</nobr></th>
+						<th><nobr>状态</nobr></th>
+						<th><nobr>创建时间</nobr></th>
+						<th><nobr>更新时间</nobr></th>
+						<th><nobr>类型</nobr></th>
+						<th><nobr>分享类型</nobr></th>
+						<th><nobr>userName</nobr></th>
+						<th><nobr>群量</nobr></th>
+					</tr>
+
+				</thead>
+				<tbody id="tbody">
+
+				</tbody>
+			</table>
+
+			<!-- layUI 分页模块 -->
+			<div class="h_55"></div>
+			<div id="pages"></div>
+			<script>
+                //分群备注 弹出表单
+                function beizhu() {
+                    //页面层
+                    layer.open({
+                        type: 1,
+                        title:'分群备注',
+                        skin: 'layui-layer-rim', //加上边框
+                        area: ['400px', '460px'], //宽高
+                        content: $("#test")
+                    });
+                }
+
+                // 获取分群备注字符串
+                function getBeizhu() {
+                    var form = document.getElementById('test');
+                    var beizhu_str = '';
+                    for (var i=0;i<form.elements.length;i++)
+                    {
+                    var ee=form.elements[i];
+                    if("INPUT"==ee.tagName) {
+                        beizhu_str += ee.value + ','
+                    }
+                }
+
+                $("#beizhu").val(beizhu_str); //更新另外一个表单的 备注
+                layer.close(layer.index); //此时你只需要把获得的index，轻轻地赋予layer.close即可
+                }
+
+
+            </script>
+            <script>
+                layui.use('laydate', function(){
+                  var laydate = layui.laydate;
+
+                  //同时绑定多个
+                  lay('.test-item').each(function(){
+                    laydate.render({
+                      elem: this
+                      ,trigger: 'click'
+                    });
+                  });
+                  //日期时间选择器
+                  laydate.render({
+                    elem: '#test5'
+                    ,type: 'datetime'
+                  });
+
+                });
+            </script>
+            <script>
+                $(document).ready(function() {
+                  $.ajax({
+                    url : "https://deal-admin.kuick.cn/api/v1.7/app/e5b1ace0-f756-4327-94a7-053eb890d327/member/50041/customer-swarms?access_token=" + "{{ token }}",//后台请求的数据，用的是PHP
+                    dataType : "json",//数据格式
+                    type : "get",//请求方式
+                    async : true ,//是否异步请求
+                    success : function(data) {  //如果请求成功，返回数据。
+                    var html = "";
+                    for(var i=0;i<data["data"].length;i++){  //遍历data数组
+                        var daoxu_i = data['data'].length - i -1;
+                        var ls = data["data"][daoxu_i];
+                        html +="<tr>\n" +
+                            "                            <td><nobr> " + i  + "</nobr></td>\n" +
+                            "                            <td><nobr>" + ls.kuickUserId + "</nobr></td>\n" +
+                            "                            <td><nobr>" +  ls.name  + "</nobr></td>\n" +
+                            "                            <td><img src=" + ls.photoUrl +"  width=\"20\" height=\"20\" onmouseenter=\"imgBig(this)\" onmouseleave=\"imgSmall(this)\"/></td>\n" +
+                            "                            <td><nobr>" + ls.comment + "</nobr></td>\n" +
+                            "                            <td><nobr>" + ls.status + "</nobr></td>\n" +
+                            "                            <td><nobr>" + ls.createdAt + "</nobr></td>\n" +
+                            "                            <td><nobr>" + ls.updatedAt + "</nobr></td>\n" +
+                            "                            <td><nobr>" + ls.type + "</nobr></td>\n" +
+                            "                            <td><nobr>" + ls.shareType + "</nobr></td>\n" +
+                            "                            <td><nobr>" + ls.userName + "</nobr></td>\n" +
+                            "                            <td><nobr>" + ls.customerCount + "</nobr></td>\n" +
+                            "                        </tr>";
+
+//                             "                            <td><nobr> " + ls.id + "</nobr></td>\n" +
+//                            "                            <td><nobr> " + ls.appId + "</nobr></td>\n" +
+
+                      }
+                      $("#tbody").html(html); //在html页面id=test的标签里显示html内容
+                    },
+                  })
+                })
+            </script>
+
+		</div>
+	</body>
+
+
+</html>

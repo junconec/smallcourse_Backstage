@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1">
+		<!-- Google Chrome Frame也可以让IE用上Chrome的引擎: -->
+		<meta name="renderer" content="webkit">
+		<!--国产浏览器高速模式-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="依通科技" />
+		<!-- 作者 -->
+		<meta name="revised" content="穷在闹市.v3, 2019/05/01" />
+		<!-- 定义页面的最新版本 -->
+		<meta name="description" content="网站简介" />
+		<!-- 网站简介 -->
+		<meta name="keywords" content="搜索关键字，以半角英文逗号隔开" />
+		<title>开课吧小课后台系统</title>
+
+		<!-- 公共样式 开始 -->
+		<link rel="shortcut icon" href="../static/images/favicon.ico"/>
+		<link rel="bookmark" href="../static/images/favicon.ico"/>
+		<link rel="stylesheet" type="text/css" href="../static/css/base.css">
+		<link rel="stylesheet" type="text/css" href="../static/fonts/iconfont.css">
+		<script type="text/javascript" src="../static/framework/jquery-1.11.3.min.js" ></script>
+		<script type="text/javascript" src="../static/js/base.js"></script>
+		<link rel="stylesheet" type="text/css" href="../static/layui/css/layui.css">
+	    <!--[if lt IE 9]>
+	      	<script src="framework/html5shiv.min.js"></script>
+	      	<script src="framework/respond.min.js"></script>
+	    <![endif]-->
+		<script type="text/javascript" src="../static/layui/layui.js"></script>
+		<script src="../static/framework/cframe.js"></script><!-- 仅供所有子页面使用 -->
+		<!-- 公共样式 结束 -->
+
+		<link rel="stylesheet" type="text/css" href="../static/css/frameStyle.css">
+		<script type="text/javascript" src="../static/framework/frame.js" ></script>
+
+	</head>
+
+	<body>
+		<!-- 左侧菜单 - 开始 -->
+		<div class="frameMenu">
+            <div style="text-align: center;"><a onclick="pageSwitch(this)"><img src="../static/images/kaikeLogo.png" ></a></div>
+            <div class="logo">
+                <div class="logoText">
+                    <h1 onclick="pageSwitch(this)">开课吧小课后台系统</h1>
+                </div>
+            </div>
+		    <div class="menu">
+		    	<div class="hoverBox"></div>
+		        <ul>
+                    <li>
+		                <a class="menuFA"  onclick="menuCAClick('/createQun/',this, 'page10023')"><i class="iconfont icon-liuliangyunpingtaitubiao03 left" onmouseenter="getLeftTips(this, '建群管理')" onmouseleave="layer.closeAll('tips')"></i><font>建群管理</font></a>
+		            </li>
+
+                    <li>
+		                <a class="menuFA"  onclick="menuCAClick('/orderCenter/',this, 'page10022')"><i class="iconfont icon-liuliangyunpingtaitubiao03 left" onmouseenter="getLeftTips(this, '订单中心')" onmouseleave="layer.closeAll('tips')"></i><font>订单中心</font></a>
+		            </li>
+		        </ul>
+		    </div>
+		</div>
+		<!-- 左侧菜单 - 结束 -->
+
+		<div class="main">
+			<!-- 头部栏 - 开始 -->
+			<div class="frameTop">
+				<div class="shrinkBut">
+		    		<div class="hoverBox"></div>
+					<ul>
+						<li><a   onclick="menuShrink(this)" onmouseenter="getTips(this, '收缩菜单')" onmouseleave="layer.closeAll('tips')"><i class="iconfont icon-caidan-shousuo"></i></a></li>
+						<li><a   onclick="frameRefresh()" onmouseenter="getTips(this, '刷新')" onmouseleave="layer.closeAll('tips')"><i class="iconfont icon-htmal5icon23"></i></a></li>
+					</ul>
+				</div>
+				<div class="topMenu">
+		    		<div class="hoverBox"></div>
+					<ul>
+						<li><a   id="fullScreenBut" onclick="fullScreen('fullScreenBut')" onmouseenter="getTips(this, '全屏')" onmouseleave="layer.closeAll('tips')"><i class="iconfont icon-full-screen"></i></a></li>
+					</ul>
+				</div>
+			</div>
+			<!-- 头部栏 - 结束 -->
+			
+			<!-- 核心区域 - 开始 -->
+			<div class="frameMain">
+				<div class="title" id="frameMainTitle">
+					<i class="iconfont icon-shuangzuojiantou- leftbut" onclick="pageShow('l')"></i>
+					<div class="mainPageBox">
+						<div class="mainPage">
+							<span class="active" onclick="pageSwitch(this)">
+			    				<div class="hoverBox"></div>
+								<i class="iconfont icon-shouye"></i>
+							</span>
+						</div>
+					</div>
+				</div>
+				<div class="con">
+					<div class="mainPageCon">
+						<iframe class="mainIframe" src="/createQun/" scrolling="yes"></iframe>
+					</div>
+				</div>
+			</div>
+			<!-- 核心区域 - 结束 -->
+		</div>
+	</body>
+
+</html>

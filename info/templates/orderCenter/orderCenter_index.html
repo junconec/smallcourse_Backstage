@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1">
+		<!-- Google Chrome Frame也可以让IE用上Chrome的引擎: -->
+		<meta name="renderer" content="webkit">
+		<!--国产浏览器高速模式-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="小课后台" />
+		<!-- 作者 -->
+		<meta name="revised" content="小课后台.v3, 2019/05/01" />
+		<!-- 定义页面的最新版本 -->
+		<meta name="description" content="网站简介" />
+		<!-- 网站简介 -->
+		<meta name="keywords" content="搜索关键字，以半角英文逗号隔开" />
+		<title>小课后台出品</title>
+		<!-- 公共样式 开始 -->
+		<link rel="stylesheet" type="text/css" href="../../static/css/base.css">
+		<link rel="stylesheet" type="text/css" href="../../static/fonts/iconfont.css">
+		<script type="text/javascript" src="../../static/framework/jquery-1.11.3.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../../static/layui/css/layui.css">
+		<script type="text/javascript" src="../../static/layui/layui.js"></script>
+		<script src="../../static/framework/cframe.js"></script><!-- 仅供所有子页面使用 -->
+		<!-- 公共样式 结束 -->
+
+		<style>
+			.layui-table img {
+			    max-width: none;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div class="cBody">
+			<div class="console">
+				<form class="layui-form" id="form2" action="searchOrder">
+					<div>
+						<div class="layui-input-inline">
+                            <label class="layui-form-label"><nobr>销转</nobr></label>
+                            <div class="layui-input-inline">
+                                <input name="xiaozhuan" lay-filter="zhuanxiao" id="xiaozhuan" class="layui-input" value="{{ json_data.xiaozhuan }}" list="names">
+                                <datalist id="names">
+                                    {% for name in json_data.name_list %}
+                                        <option value="{{ name[0] }}"></option>
+                                    {% endfor %}
+                                </datalist>
+                            </div>
+                        </div>
+                        <div class="layui-input-inline">
+                            <label class="layui-form-label"><nobr>日期</nobr></label>
+                            <div class="layui-inline">
+                              <input type="text" name="start_time" id="start_time" class="layui-input test-item" value="{{ json_data.start_time }}">
+                            </div>
+                            <p class="layui-inline">--</p>
+                            <div class="layui-inline">
+                              <input type="text" name="finish_time" id="finish_time" class="layui-input test-item" value="{{ json_data.finish_time }}">
+                            </div>
+
+                        </div>
+
+
+                        <div class="layui-input-inline" style="display:none">
+                            <label class="layui-form-label"><nobr>token</nobr></label>
+                            <div class="layui-inline">
+                              <input type="text" name="token" id="token" class="layui-input test-item" value="{{ token }}">
+                            </div>
+                        </div>
+
+                        <div class="layui-input-inline" style="display:none">
+                            <label class="layui-form-label"><nobr>is_select_all</nobr></label>
+                            <div class="layui-inline">
+                              <input type="text" name="is_select_all" id="is_select_all" class="layui-input test-item" value="">
+                            </div>
+
+                        </div>
+
+                        <input class="layui-btn" type="submit" value="查询">
+
+                        <a onclick="getClass()" class="layui-btn">获取所有群</a>
+
+                        <div id="select" class="layui-input-inline" style="display:none">
+                            <select  name="qun_id" id="qun_id" class="layui-input" lay-filter="qun_id">
+                            </select>
+                         </div>
+                        <a onclick="insertAll()" class="layui-btn">导入选中</a>
+
+					</div>
+				</form>
+				</form>
+			</div>
+
+			<table class="layui-table">
+				<thead>
+                        <th><nobr id="allSelect"><input type="checkbox" onclick="selectAll(this)" />全选（已选中0条）</nobr></th>
+						<th><nobr>订单编号</nobr></th>
+						<th><nobr>微信头像</nobr></th>
+						<th><nobr>微信昵称</nobr></th>
+						<th><nobr>成单人</nobr></th>
+						<th><nobr>课程</nobr></th>
+						<th><nobr>创建时间</nobr></th>
+					</tr>
+
+				</thead>
+				<tbody>
+                    {% for order in json_data.order_list %}
+                        <tr>
+                            <th><input type="checkbox" name='choice' id="{{ order.unionid }}" onchange="getChecked()"/></th>
+                            <td><nobr> {{ order.no }}  </nobr></td>
+                            <td><img src="{{ order.headimgurl }}"  width="20" height="20" onmouseenter="imgBig(this)" onmouseleave="imgSmall(this)"/></td>
+                            <td><nobr> {{ order.nickname }} </nobr></td>
+                            <td><nobr> {{ order.seller_name }} </nobr></td>
+                            <td><nobr> Python小课 </nobr></td>
+                            <td><nobr> {{ json_data.time_list[loop.index0] }} </nobr></td>
+                        </tr>
+                    {% endfor %}
+
+
+				</tbody>
+			</table>
+
+
+			<!-- layUI 分页模块 -->
+			<div class="h_55"></div>
+			<div id="pages"></div>
+			<script>
+                // 分页模块
+				layui.use('laypage', function() {
+					var laypage = layui.laypage;
+					//总页数大于页码总数
+					laypage.render({
+					    elem: 'pages'
+                        ,limits:[20,30,40,50]
+                        ,limit:{{ json_data.page_limit }}
+					    ,count: {{ json_data.total_count }}
+                        ,curr: {{ json_data.current_page }}
+					    ,layout: ['count', 'prev', 'page', 'next', 'limit', 'skip']
+					    ,jump: function(obj, first){
+					        //obj 包含了当前分页的所有参数
+                            // 比如：obj.curr:当前页，以便像服务端请求对应页的数据
+                            // obj.limit :每页显示的条数
+                            console.log(obj);
+                            if(!first){
+                                //first, 是分页被切换触发时返回的数据 是否首次， 一般用于初始加载的按断
+                                window.location.href = "searchOrder?p=" + obj.curr + '&limit=' + obj.limit + '&xiaozhuan=' + "{{ json_data.xiaozhuan }}" + "&start_time=" + "{{ json_data.start_time }}" + "&finish_time=" + "{{ json_data.finish_time }}" + "&token=" + "{{ token }}";
+
+                            }
+
+
+					    }
+
+					});
+				});
+
+                //checkbox 全选/取消全选
+                function selectAll(choiceBtn) {
+                    var arr=document.getElementsByName("choice");
+                    for(var i=0;i<arr.length;i++){
+                        arr[i].checked=choiceBtn.checked;//循环遍历看是否全选
+                    }
+                    if(choiceBtn.checked) {
+                        document.getElementById("is_select_all").value = "1";
+                        document.getElementById("allSelect").innerHTML = "<input type=\"checkbox\" checked=\"true\" onclick=\"selectAll(this)\"/>全选（已选中" + "{{ json_data.total_count }}" + "条）";
+                    }else{
+                        document.getElementById("is_select_all").value = "";
+                        document.getElementById("allSelect").innerHTML = "<input type=\"checkbox\" onclick=\"selectAll(this)\"/>全选（已选中" + "0" + "条）";
+
+                    }
+
+                }
+
+                //getChecked 获取选中的条数
+                function getChecked() {
+                    var arr=document.getElementsByName("choice");
+                    var checkedCount = 0;
+                    for(var i=0;i<arr.length;i++){
+                        if (arr[i].checked) {
+                            checkedCount += 1;
+                        }
+                    }
+                    document.getElementById("allSelect").innerHTML = "<input type=\"checkbox\" onclick=\"selectAll(this)\"/>全选（已选中" + String(checkedCount) + "条）";
+
+                }
+
+                // 获取下拉群列表
+                function getClass() {
+                    $.ajax({
+                        url : "https://deal-admin.kuick.cn/api/v1.7/app/e5b1ace0-f756-4327-94a7-053eb890d327/member/50041/customer-swarms?access_token=" + "{{ token }}",
+                        dataType : "json",//数据格式
+                        type : "get",//请求方式
+                        async : true ,//是否异步请求
+                        success : function(data) {  //如果请求成功，返回数据。
+
+                            var objSelectet = document.getElementById("qun_id");
+                            for(var i=0;i<data["data"].length;i++){  //遍历data数组
+                                var daoxu_i = data['data'].length - i -1;
+                                var ls = data["data"][daoxu_i];
+                                var objOption = document.createElement("OPTION");
+                                objOption.text= ls.name;
+                                objOption.value=ls.id;
+                                objSelectet.options.add(objOption);
+                              }
+                            // 首先显示下拉框
+                            var temp = document.getElementById('select').removeAttribute('style');
+                            layui.form.render('select');
+
+                            },
+                  })
+
+
+
+                }
+
+
+                // 批量导入选中的数据
+                function insertAll() {
+                    layer.confirm('您确定要导入选中的数据？', {
+                        btn: ['确定','取消'] //按钮
+                    },function (index) {
+                        var arr=document.getElementsByName("choice");
+                        var check_list = [];
+                        // 获取select的选择
+                        for(var i = 0; i < arr.length; i++) {
+                            if (arr[i].checked){
+                                console.log(arr[i].id);
+                                check_list.push(arr[i].id);
+                                }
+                         }
+
+                        if(check_list.length == 0) {
+                            layer.msg('请先选中再导入');
+                            return; //下面代码不执行
+                        }
+                        check_list = String(check_list);
+                        var class_id = document.getElementById("qun_id").value;
+
+                        var is_select_all = document.getElementById("is_select_all").value;
+                        var xiaozhuan = document.getElementById("xiaozhuan").value;
+                        var start_time = document.getElementById("start_time").value;
+                        var finish_time = document.getElementById("finish_time").value;
+
+                        $.ajax({
+                        //几个参数需要注意一下
+                            url: "/orderCenter/insertChecked" ,//url
+                            type: "post",//方法类型
+                            data:{
+                                'orderIds':check_list, // 选中的order
+                                'classId':class_id, // 群id
+                                'is_all_select': is_select_all, // 是否全选
+                                'xiaozhuan': xiaozhuan, // 查询条件 销转
+                                'start_time':start_time, // 开始时间
+                                'finish_time':finish_time, // 结束时间
+                                 },
+                            traditional: true, //允许传输数组（取消深度序列化，默认为false为了适应PHP等框架）
+                            dataType: "json",//预期服务器返回的数据类型
+                            success: function (resp) {
+                                console.log(resp);//打印服务端返回的数据(调试用)
+                                if (resp.errno == "200") {
+                                    layer.msg(resp.errmsg)
+                                    location.reload();
+                                }else {
+                                    layer.msg(resp.errmsg);
+                                }
+                            },
+                            error : function() {
+                                {#alert("异常！");#}
+                            }
+                    });
+                    }, function(){
+                    });
+                    return false;}
+
+            </script>
+            <script>
+                layui.use('laydate', function(){
+                  var laydate = layui.laydate;
+
+                  //同时绑定多个
+                  lay('.test-item').each(function(){
+                    laydate.render({
+                      elem: this
+                      ,trigger: 'click'
+                    });
+                  });
+                  //日期时间选择器
+                  laydate.render({
+                    elem: '#test5'
+                    ,type: 'datetime'
+                  });
+
+                });
+            </script>
+
+		</div>
+	</body>
+
+
+</html>
