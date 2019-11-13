@@ -5,7 +5,7 @@ from info import db
 class Middle(db.Model):
     __tablename__ = 'middle'
 
-    id = db.Column(db.Integer, primary_key=True) # 类型 是否是主键
+    id = db.Column(db.Integer, primary_key=True)  # 类型 是否是主键
     # 群id
     class_id = db.Column(db.String(128))
     # 成员id

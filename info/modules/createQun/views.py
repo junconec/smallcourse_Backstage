@@ -22,7 +22,7 @@ def index():
     return render_template('createQun/create_qun.html', token=token)
 
 
-# 建群管理建群 --
+# 建群管理建群
 @createQun_blue.route('/create', methods=['GET', 'POST'])
 def create():
     if request.method == 'GET':

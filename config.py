@@ -8,6 +8,7 @@ class Config(object):
 
     DEBUG = True
     # 云数据库的配置信息
+    # SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:mysql@127.0.0.1:3306/small_class"
     SQLALCHEMY_DATABASE_URI = "mysql+pymysql://wucongwen:UyTflfZqoITBef6J3pVtrGsalUmznQr6@rm-2ze03u1v79619rwt5o.mysql.rds.aliyuncs.com:3306/kkb-cloud-vipcourse"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
@@ -22,10 +23,36 @@ class RET(object):
     OK = 200 # 成功
 
 
-# 本地数据库信息        读写分离
+# 本地数据库信息
 MYSQL_HOST = 'localhost'
 MYSQL_USER = 'root'
 MYSQL_PW = 'mysql'
 MYSQL_PORT = 3306
 MYSQL_DB = 'small_class'
-MYSQL_TB = 'middle'  # qun_id 跟 customer_id 对应表
+MYSQL_TB = 'middle'  # 储存群id和订单关系的表
+
+
+# 云数据库 sql查询配置
+# MYSQL_HOST_2 = 'localhost'  # 云数据库host
+# MYSQL_USER_2 = 'root'  # 云数据库user
+# MYSQL_PW_2 = 'mysql'  # 云数据库pw
+# MYSQL_PORT_2 = 3306  # 云数据库port
+# # 云数据库第一个库
+# MYSQL_DB_1 = 'small_class'  # 第一个库名  （kkb-cloud-vipcourse）
+# MYSQL_TB_VIP = 'vip_seller_qrcode'  # vip_seller_qrcode表
+#
+# # 云数据库第二个库
+# MYSQL_DB_2 = 'small_class_2'  # 储存用户的数据库  (kkb-cloud-account)
+# MYSQL_TB_2 = 'sys_user'  # 储存用户的表 (sys_user)
+# 云数据库 sql查询配置
+MYSQL_HOST_2 = 'rm-2ze03u1v79619rwt5o.mysql.rds.aliyuncs.com'  # 云数据库host
+MYSQL_USER_2 = 'wucongwen'  # 云数据库user
+MYSQL_PW_2 = 'UyTflfZqoITBef6J3pVtrGsalUmznQr6'  # 云数据库pw
+MYSQL_PORT_2 = 3306  # 云数据库port
+# 云数据库第一个库
+MYSQL_DB_1 = 'kkb-cloud-vipcourse'  # 第一个库名  （kkb-cloud-vipcourse）
+MYSQL_TB_VIP = 'vip_seller_qrcode'  # vip_seller_qrcode表
+
+# 云数据库第二个库
+MYSQL_DB_2 = 'kkb-cloud-account'  # 储存用户的数据库  (kkb-cloud-account)
+MYSQL_TB_2 = 'sys_user'  # 储存用户的表 (sys_user)

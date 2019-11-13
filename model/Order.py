@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 from info import db
 
+
 # 订单表
 class Order(db.Model):
     __tablename__ = 'vip_order'

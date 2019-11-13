@@ -2,13 +2,11 @@
 import time
 
 from flask import render_template, request, jsonify
-
-from config import MYSQL_TB
-from info import cur, conn
-from model.Order import Order
-
 from . import orderCenter_blue
 import requests
+from model.Order import Order
+from info import conn,cur, conn3, cur3
+from config import MYSQL_TB, MYSQL_DB_2, MYSQL_TB_2
 
 
 # 订单中心首页
@@ -28,10 +26,10 @@ def orderCenter():
         limit = int(request.form.get('limit', 20))
 
     # # 获取总数
-    total_count = Order.query.filter().count()
+    total_count = Order.query.filter(Order.course_id == 76,Order.class_id == 121, Order.status == 2).count()
 
     # 获取分页数据
-    pagination = Order.query.filter(Order.status==2).order_by(Order.id.asc()).paginate(p, per_page=limit, error_out=False)
+    pagination = Order.query.filter(Order.course_id == 76,Order.class_id == 121, Order.status == 2).order_by(Order.create_time.desc()).paginate(p, per_page=limit, error_out=False)
     order_list = pagination.items
 
     # 转换时间戳为时间
@@ -53,7 +51,11 @@ def orderCenter():
     token = requests.post('https://deal-api.kuick.cn/kuickuser/oauth2/access_token', headers=headers, data=body).json()['access_token']
 
     # 获取所有人的名字
-    name_list = Order.query.with_entities(Order.seller_name).distinct().all()
+    sql = 'SELECT DISTINCT (realname) FROM {}'.format(MYSQL_TB_2)
+    cur3.execute(sql)
+    name_list = []
+    for name in cur3.fetchall():
+        name_list.append(name[0])
 
     json_data = {}
     json_data['order_list'] = order_list
@@ -104,26 +106,39 @@ def insertChecked():
         else:
             pass
 
+        sql = 'SELECT qr_code FROM sys_seller ss, sys_device_seller sds, sys_user_device sud, sys_user su WHERE' \
+              ' su.realname="{xiaozhuan}" AND sud.user_id= su.id AND sds.device_id = sud.device_id AND ss.id' \
+              ' = sds.seller_id'.format(
+            xiaozhuan=xiaozhuan
+        )
+        cur3.execute(sql)
+        rets = cur3.fetchall()
+        qr_code_list = []
+        for qr_code in rets:
+            qr_code_list.append(qr_code[0])
+
+        qr_code_tuple = tuple(qr_code_list)
+
         # 查询分为6中情况
         if all([xiaozhuan, start_time, finish_time]):
-            filter_ret = Order.query.filter(Order.status==2, Order.seller_name.like("%{xiaozhuan}%".format(xiaozhuan=xiaozhuan)),
+            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple),
                                             Order.create_time.__ge__(start_time), Order.create_time.__le__(finish_time))
         elif xiaozhuan and not (start_time) and not (finish_time):
-            filter_ret = Order.query.filter(Order.status==2, Order.seller_name.like("%{xiaozhuan}%".format(xiaozhuan=xiaozhuan)))
+            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple))
         elif not (xiaozhuan) and start_time and not (finish_time):
-            filter_ret = Order.query.filter(Order.status==2, Order.create_time.__ge__(start_time))
+            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.create_time.__ge__(start_time))
         elif not (xiaozhuan) and not (start_time) and finish_time:
-            filter_ret = Order.query.filter(Order.status==2, Order.create_time.__le__(finish_time))
+            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.create_time.__le__(finish_time))
         elif xiaozhuan and start_time and not (finish_time):
-            filter_ret = Order.query.filter(Order.status==2, Order.seller_name.like("%{xiaozhuan}%".format(xiaozhuan=xiaozhuan)),
+            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple),
                                             Order.create_time.__ge__(start_time))
         elif xiaozhuan and not (start_time) and finish_time:
-            filter_ret = Order.query.filter(Order.status==2, Order.seller_name.like("%{xiaozhuan}%".format(xiaozhuan=xiaozhuan)),
+            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple),
                                             Order.create_time.__le__(finish_time))
         elif not (xiaozhuan) and start_time and finish_time:
-            filter_ret = Order.query.filter(Order.status==2, Order.create_time.__ge__(start_time), Order.create_time.__le__(finish_time))
+            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.create_time.__ge__(start_time), Order.create_time.__le__(finish_time))
         elif not (xiaozhuan) and not (start_time) and not (finish_time):
-            filter_ret = Order.query.filter(Order.status==2)
+            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2)
 
 
         orderIds = []
@@ -182,29 +197,43 @@ def searchOrder():
     else:
         pass
 
+    sql = 'SELECT qr_code FROM sys_seller ss, sys_device_seller sds, sys_user_device sud, sys_user su WHERE' \
+          ' su.realname="{xiaozhuan}" AND sud.user_id= su.id AND sds.device_id = sud.device_id AND ss.id' \
+          ' = sds.seller_id'.format(
+            xiaozhuan=xiaozhuan
+            )
+    cur3.execute(sql)
+    rets = cur3.fetchall()
+    qr_code_list = []
+    for qr_code in rets:
+        qr_code_list.append(qr_code[0])
+
+    qr_code_tuple = tuple(qr_code_list)
+
+
     # 查询分为6中情况
     if all([xiaozhuan, start_time, finish_time]):
-        filter_ret = Order.query.filter(Order.status==2, Order.seller_name.like("%{xiaozhuan}%".format(xiaozhuan=xiaozhuan)), Order.create_time.__ge__(start_time), Order.create_time.__le__(finish_time))
+        filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple), Order.create_time.__ge__(start_time), Order.create_time.__le__(finish_time))
     elif xiaozhuan and not(start_time) and not(finish_time):
-        filter_ret = Order.query.filter(Order.status==2, Order.seller_name.like("%{xiaozhuan}%".format(xiaozhuan=xiaozhuan)))
+        filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple))
     elif not(xiaozhuan) and start_time and not(finish_time):
-        filter_ret = Order.query.filter(Order.status==2, Order.create_time.__ge__(start_time))
+        filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.create_time.__ge__(start_time))
     elif not(xiaozhuan) and not(start_time) and finish_time:
-        filter_ret = Order.query.filter(Order.status==2, Order.create_time.__le__(finish_time))
+        filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.create_time.__le__(finish_time))
     elif xiaozhuan and start_time and not(finish_time):
-        filter_ret = Order.query.filter(Order.status==2, Order.seller_name.like("%{xiaozhuan}%".format(xiaozhuan=xiaozhuan)), Order.create_time.__ge__(start_time))
+        filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple), Order.create_time.__ge__(start_time))
     elif xiaozhuan and not(start_time) and finish_time:
-        filter_ret = Order.query.filter(Order.status==2, Order.seller_name.like("%{xiaozhuan}%".format(xiaozhuan=xiaozhuan)), Order.create_time.__le__(finish_time))
+        filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple), Order.create_time.__le__(finish_time))
     elif not(xiaozhuan) and start_time and finish_time:
-        filter_ret = Order.query.filter(Order.status==2, Order.create_time.__ge__(start_time), Order.create_time.__le__(finish_time))
+        filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.create_time.__ge__(start_time), Order.create_time.__le__(finish_time))
     elif not(xiaozhuan) and not(start_time) and not(finish_time):
-        filter_ret = Order.query.filter(Order.status==2)
+        filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2)
 
     # # 获取总数
     total_count = filter_ret.count()
 
     # 获取分页数据
-    pagination = filter_ret.order_by(Order.id.asc()).paginate(p, per_page=limit, error_out=False)
+    pagination = filter_ret.order_by(Order.create_time.desc()).paginate(p, per_page=limit, error_out=False)
     order_list = pagination.items
 
     # 转换时间戳为时间
@@ -216,9 +245,11 @@ def searchOrder():
         time_list.append(strTime)
 
     # 获取所有人的名字
-    name_list = Order.query.with_entities(Order.seller_name).distinct().all()
-
-
+    sql = 'SELECT DISTINCT (realname) FROM {}'.format(MYSQL_TB_2)
+    cur3.execute(sql)
+    name_list = []
+    for name in cur3.fetchall():
+        name_list.append(name[0])
 
     json_data = {}
     json_data['order_list'] = order_list

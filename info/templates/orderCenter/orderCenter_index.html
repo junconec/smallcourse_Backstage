@@ -43,7 +43,7 @@
                                 <input name="xiaozhuan" lay-filter="zhuanxiao" id="xiaozhuan" class="layui-input" value="{{ json_data.xiaozhuan }}" list="names">
                                 <datalist id="names">
                                     {% for name in json_data.name_list %}
-                                        <option value="{{ name[0] }}"></option>
+                                        <option value="{{ name }}"></option>
                                     {% endfor %}
                                 </datalist>
                             </div>
