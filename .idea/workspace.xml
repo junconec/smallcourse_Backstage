@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c85431a0-0d98-4364-9286-9e17b254f604" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/info/modules/createQun/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/info/modules/createQun/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/info/modules/orderCenter/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/info/modules/orderCenter/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/manage.py" beforeDir="false" afterPath="$PROJECT_DIR$/manage.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/info/templates/frame.html" beforeDir="false" afterPath="$PROJECT_DIR$/info/templates/frame.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/info/templates/orderCenter/orderCenter_index.html" beforeDir="false" afterPath="$PROJECT_DIR$/info/templates/orderCenter/orderCenter_index.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -87,9 +85,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="440">
               <caret line="20" column="16" selection-start-line="20" selection-start-column="16" selection-end-line="20" selection-end-column="16" />
-              <folding>
-                <element signature="n#style#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -303,12 +298,12 @@
       <workItem from="1573450848833" duration="327000" />
       <workItem from="1573451210429" duration="2591000" />
       <workItem from="1573459716133" duration="3216000" />
-      <workItem from="1574046179147" duration="4725000" />
+      <workItem from="1574046179147" duration="4835000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="10859000" />
+    <option name="totallyTimeSpent" value="10969000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1680" height="1027" extended-state="0" />
@@ -410,9 +405,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="440">
           <caret line="20" column="16" selection-start-line="20" selection-start-column="16" selection-end-line="20" selection-end-column="16" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
