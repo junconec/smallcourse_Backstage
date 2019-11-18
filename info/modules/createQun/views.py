@@ -2,13 +2,14 @@
 import requests
 from flask import render_template, request
 from . import createQun_blue
-
+import logging
 from model.Order import Order
 
 
 # 建群管理首页
 @createQun_blue.route('/')
 def index():
+
     body = {"grant_type": "password",
             "username": "15501036155",
             "password": "aa123456"}
@@ -16,7 +17,10 @@ def index():
     headers = {
         'Authorization': 'Basic MTAwMDAwMDA6OWUyMWNkZTMtNjRkZS00OTc2LWI4Y2MtMzI3NTQ2ZDJlZTIy'
     }
-    token = requests.post('https://deal-api.kuick.cn/kuickuser/oauth2/access_token', headers=headers, data=body).json()['access_token']
+    try:
+        token = requests.post('https://deal-api.kuick.cn/kuickuser/oauth2/access_token', headers=headers, data=body).json()['access_token']
+    except Exception as e:
+        logging.debug("建群管理首页获取账户ID处：",e)
 
     # # 渲染到模板
     return render_template('createQun/create_qun.html', token=token)
@@ -54,12 +58,14 @@ def create():
         'photo_url': qun_img,
         'comment': beizhu
     }
+    try:
+        # 建群请求
+        status = requests.post(create_qun_url, data=body_2).json()['status']
 
-    # 建群请求
-    status = requests.post(create_qun_url, data=body_2).json()['status']
-
-    if status == 1:
-        return render_template('createQun/create_qun.html', token=token)
+        if status == 1:
+            return render_template('createQun/create_qun.html', token=token)
+    except Exception as e:
+        logging.debug("发送建群请求：",e)
 
     # # 渲染到模板
     return render_template('createQun/create_qun.html', token=token)

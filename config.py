@@ -1,6 +1,7 @@
 import logging
-import pymysql
 
+import pymysql
+from logging.handlers import RotatingFileHandler
 
 class Config(object):
     """工程配置信息"""
@@ -11,8 +12,31 @@ class Config(object):
     # SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:mysql@127.0.0.1:3306/small_class"
     SQLALCHEMY_DATABASE_URI = "mysql+pymysql://wucongwen:UyTflfZqoITBef6J3pVtrGsalUmznQr6@rm-2ze03u1v79619rwt5o.mysql.rds.aliyuncs.com:3306/kkb-cloud-vipcourse"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    # 设置日志等级
+    LOG_LEVEL = logging.DEBUG
+
+class DevelopmentConfig(Config):
+    """开发环境下的配置"""
+    DEBUG = True
 
 
+class ProductionConfig(Config):
+    """生产环境下的配置"""
+    DEBUG = False
+    LOG_LEVEL = logging.WARNING
+
+
+class TestingConfig(Config):
+    """单元测试环境下的配置"""
+    DEBUG = True
+    TESTING = True
+
+
+config = {
+    "development": DevelopmentConfig,
+    "production": ProductionConfig,
+    "testing": TestingConfig
+}
 class RET(object):
     """结果状态码"""
     PARAERR = 101 # 参数错误

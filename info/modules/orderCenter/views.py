@@ -7,6 +7,7 @@ import requests
 from model.Order import Order
 from info import conn,cur, conn3, cur3
 from config import MYSQL_TB, MYSQL_DB_2, MYSQL_TB_2
+import logging
 
 
 # 订单中心首页
@@ -20,17 +21,28 @@ def orderCenter():
         p = int(request.form.get('p', 1))
 
     # 获取每页展示的数量
-    if request.method == 'GET':
-        limit = int(request.args.get('limit', 20))
-    else:
-        limit = int(request.form.get('limit', 20))
+    try:
+        if request.method == 'GET':
+            limit = int(request.args.get('limit', 20))
+        else:
+            limit = int(request.form.get('limit', 20))
+    except Exception as e:
+        logging.debug("获取分页处error：",e)
 
-    # # 获取总数
-    total_count = Order.query.filter(Order.course_id == 76,Order.class_id == 121, Order.status == 2).count()
+    try:
+        # 获取总数
+        global total_count
+        total_count = Order.query.filter(Order.course_id == 76,Order.class_id == 121, Order.status == 2).count()
+    except Exception as e:
+        logging.debug("获取总页数处：",e)
 
     # 获取分页数据
-    pagination = Order.query.filter(Order.course_id == 76,Order.class_id == 121, Order.status == 2).order_by(Order.create_time.desc()).paginate(p, per_page=limit, error_out=False)
-    order_list = pagination.items
+    try:
+        pagination = Order.query.filter(Order.course_id == 76,Order.class_id == 121, Order.status == 2).order_by(Order.create_time.desc()).paginate(p, per_page=limit, error_out=False)
+        global order_list
+        order_list = pagination.items
+    except Exception as e:
+        logging.debug("获取分页数据处：",e)
 
     # 转换时间戳为时间
     time_list = []
@@ -49,13 +61,16 @@ def orderCenter():
         'Authorization': 'Basic MTAwMDAwMDA6OWUyMWNkZTMtNjRkZS00OTc2LWI4Y2MtMzI3NTQ2ZDJlZTIy'
     }
     token = requests.post('https://deal-api.kuick.cn/kuickuser/oauth2/access_token', headers=headers, data=body).json()['access_token']
-
-    # 获取所有人的名字
-    sql = 'SELECT DISTINCT (realname) FROM {}'.format(MYSQL_TB_2)
-    cur3.execute(sql)
-    name_list = []
-    for name in cur3.fetchall():
-        name_list.append(name[0])
+    try:
+        # 获取所有人的名字
+        sql = 'SELECT DISTINCT (realname) FROM {}'.format(MYSQL_TB_2)
+        cur3.execute(sql)
+        global name_list
+        name_list = []
+        for name in cur3.fetchall():
+            name_list.append(name[0])
+    except Exception as e:
+        logging.debug("获取所有人名字数据处：",e)
 
     json_data = {}
     json_data['order_list'] = order_list
@@ -118,28 +133,30 @@ def insertChecked():
             qr_code_list.append(qr_code[0])
 
         qr_code_tuple = tuple(qr_code_list)
-
-        # 查询分为6中情况
-        if all([xiaozhuan, start_time, finish_time]):
-            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple),
-                                            Order.create_time.__ge__(start_time), Order.create_time.__le__(finish_time))
-        elif xiaozhuan and not (start_time) and not (finish_time):
-            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple))
-        elif not (xiaozhuan) and start_time and not (finish_time):
-            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.create_time.__ge__(start_time))
-        elif not (xiaozhuan) and not (start_time) and finish_time:
-            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.create_time.__le__(finish_time))
-        elif xiaozhuan and start_time and not (finish_time):
-            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple),
-                                            Order.create_time.__ge__(start_time))
-        elif xiaozhuan and not (start_time) and finish_time:
-            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple),
-                                            Order.create_time.__le__(finish_time))
-        elif not (xiaozhuan) and start_time and finish_time:
-            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.create_time.__ge__(start_time), Order.create_time.__le__(finish_time))
-        elif not (xiaozhuan) and not (start_time) and not (finish_time):
-            filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2)
-
+        try:
+            # 查询分为6中情况
+            global filter_ret
+            if all([xiaozhuan, start_time, finish_time]):
+                filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple),
+                                                Order.create_time.__ge__(start_time), Order.create_time.__le__(finish_time))
+            elif xiaozhuan and not (start_time) and not (finish_time):
+                filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple))
+            elif not (xiaozhuan) and start_time and not (finish_time):
+                filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.create_time.__ge__(start_time))
+            elif not (xiaozhuan) and not (start_time) and finish_time:
+                filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.create_time.__le__(finish_time))
+            elif xiaozhuan and start_time and not (finish_time):
+                filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple),
+                                                Order.create_time.__ge__(start_time))
+            elif xiaozhuan and not (start_time) and finish_time:
+                filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.qr_code.in_(qr_code_tuple),
+                                                Order.create_time.__le__(finish_time))
+            elif not (xiaozhuan) and start_time and finish_time:
+                filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2, Order.create_time.__ge__(start_time), Order.create_time.__le__(finish_time))
+            elif not (xiaozhuan) and not (start_time) and not (finish_time):
+                filter_ret = Order.query.filter(Order.course_id == 76, Order.class_id == 121, Order.status == 2)
+        except Exception as e:
+            logging.debug("查询数据库处：",e)
 
         orderIds = []
         order_rets = filter_ret.all()
@@ -147,11 +164,15 @@ def insertChecked():
             orderIds.append(order_el.unionid)
 
     # 如果没有全选 （正常逻辑） 和 全选处理过后
-    for orderId in orderIds:
-        # 把orderId跟群id建立一对多关系
-        sql = 'INSERT INTO {} (class_id, member_id) values("{}", "{}")'.format(MYSQL_TB, classId, orderId)
-        cur.execute(sql)
-    conn.commit()
+    try:
+
+        for orderId in orderIds:
+            # 把orderId跟群id建立一对多关系
+            sql = 'INSERT INTO {} (class_id, member_id) values("{}", "{}")'.format(MYSQL_TB, classId, orderId)
+            cur.execute(sql)
+        conn.commit()
+    except Exception as e:
+        logging.debug("建群分群id，人对应：",e)
 
     return jsonify(errno=200, errmsg="导入成功")
 
